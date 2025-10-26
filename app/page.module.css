@@ -1,0 +1,34 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.08), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(14, 165, 233, 0.08), transparent 60%);
+}
+
+.inner {
+  width: 100%;
+  max-width: 960px;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .inner {
+    gap: 1rem;
+  }
+
+  .mainContent {
+    align-items: flex-start;
+  }
+}
