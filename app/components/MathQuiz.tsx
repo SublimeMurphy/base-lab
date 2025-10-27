@@ -230,7 +230,7 @@ export default function MathQuiz() {
             </p>
           </div>
           <Transaction
-            calls={calls}
+            calls={[...calls]}
             chainId={baseSepolia.id}
             className={styles.transactionContainer}
           >
