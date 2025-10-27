@@ -17,7 +17,7 @@ const wagmiConfig = createConfig({
   transports: {
     [baseSepolia.id]: http(RPC_URL),
   },
-  connectors: [farcasterConnector, injected()],
+  connectors: [farcasterConnector(), injected()],
 });
 
 const queryClient = new QueryClient();
