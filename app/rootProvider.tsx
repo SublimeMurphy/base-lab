@@ -11,8 +11,6 @@ import "@coinbase/onchainkit/styles.css";
 const RPC_URL = process.env.NEXT_PUBLIC_ALCHEMY_RPC_URL ?? "https://sepolia.base.org";
 
 const wagmiConfig = createConfig({
-  autoConnect: true,
-  ssr: true,
   chains: [baseSepolia],
   transports: {
     [baseSepolia.id]: http(RPC_URL),

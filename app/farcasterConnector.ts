@@ -1,12 +1,14 @@
 'use client';
 
 import { createConnector } from 'wagmi';
-import type { EIP1193Provider, EIP1193EventMap } from 'viem';
+import type { Address, EIP1193EventMap, EIP1193Provider } from 'viem';
 import sdk from '@farcaster/miniapp-sdk';
 import { baseSepolia } from 'wagmi/chains';
 
 const targetChainId = baseSepolia.id;
 const targetChainHex = `0x${targetChainId.toString(16)}`;
+
+type WagmiConnectorReturn = ReturnType<Parameters<typeof createConnector>[0]>;
 
 export const farcasterConnector = () =>
   createConnector((config) => {
@@ -25,11 +27,14 @@ export const farcasterConnector = () =>
       return provider;
     };
 
-    const requestAccounts = async (method: 'eth_requestAccounts' | 'eth_accounts') => {
+    const requestAccounts = async (
+      method: 'eth_requestAccounts' | 'eth_accounts',
+    ): Promise<readonly Address[]> => {
       const currentProvider = await getProvider();
-      return (await currentProvider.request({
+      const accounts = (await currentProvider.request({
         method,
       })) as string[];
+      return accounts.map((account) => account as Address) as readonly Address[];
     };
 
     const getChainId = async () => {
@@ -62,7 +67,7 @@ export const farcasterConnector = () =>
     };
 
     const handleDisconnect: EIP1193EventMap['disconnect'] = () => {
-      config.emitter.emit('disconnect', undefined);
+      config.emitter.emit('disconnect');
     };
 
     const attachListeners = async () => {
@@ -79,33 +84,57 @@ export const farcasterConnector = () =>
       currentProvider?.removeListener?.('disconnect', handleDisconnect);
     };
 
-    return {
+    const connector: WagmiConnectorReturn = {
       id: 'frame',
       name: 'Farcaster Wallet',
       type: 'frame' as const,
 
-      async connect({ chainId }: { chainId?: number } = {}) {
+      connect: (async ({
+        chainId,
+        isReconnecting,
+        withCapabilities,
+      }: {
+        chainId?: number;
+        isReconnecting?: boolean;
+        withCapabilities?: boolean;
+      } = {}) => {
         if (chainId && chainId !== targetChainId) {
           throw new Error('Unsupported chain for Farcaster wallet');
         }
 
         await ensureTargetChain();
-        const accounts = await requestAccounts('eth_requestAccounts');
+        let accounts = await requestAccounts('eth_accounts');
+        if (!accounts.length || !isReconnecting) {
+          accounts = await requestAccounts('eth_requestAccounts');
+        }
+
         const currentChainId = await getChainId();
 
         await attachListeners();
         config.emitter.emit('connect', { accounts, chainId: currentChainId });
 
+        if (withCapabilities) {
+          const enriched = accounts.map((address) => ({
+            address,
+            capabilities: {} as Record<string, unknown>,
+          }));
+
+          return {
+            accounts: enriched,
+            chainId: currentChainId,
+          };
+        }
+
         return {
           accounts,
           chainId: currentChainId,
         };
-      },
+      }) as WagmiConnectorReturn['connect'],
 
       async disconnect() {
         await detachListeners();
         if (provider) {
-          config.emitter.emit('disconnect', undefined);
+          config.emitter.emit('disconnect');
         }
         provider = null;
       },
@@ -152,4 +181,5 @@ export const farcasterConnector = () =>
       onChainChanged: handleChainChanged,
       onDisconnect: handleDisconnect,
     };
+    return connector;
   });
