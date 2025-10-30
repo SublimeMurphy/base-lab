@@ -24,6 +24,10 @@ export function GET(request: NextRequest) {
       supportUrl: origin,
       categories: ["education", "games"],
     },
+    "baseBuilder": {
+    "ownerAddress": "0xACAFA638CB6736f54e9616F72DF895B0199b8Ba8"
+    },
+  }
   });
 
   return NextResponse.json(manifest);
