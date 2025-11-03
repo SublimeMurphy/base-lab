@@ -6,13 +6,13 @@ export const revalidate = 3600;
 export function GET(request: NextRequest) {
   const origin = request.nextUrl.origin;
   const manifest = withValidManifest({
-    accountAssociation: {
-      header:
-        "eyJmaWQiOjE0MDE0NzUsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHg0NjAwMTgxMDMyOUVlZGVkMWEzQ0ZhNzI3RTdEQjRhMUEyYUJFODk3In0",
-      payload: "eyJkb21haW4iOiJtaW5pLW1hdGgtcXVpei52ZXJjZWwuYXBwIn0",
-      signature:
-        "VLHh4YafS0yaBW1mJBJH3R4hnaMPRzZyp5cqXIoh6tFrhzvA5tbUDWu3cr1REXJwecG7V++7RX57uaV0UF2Udhw=",
-    },
+    {
+  "accountAssociation": {
+    "header": "eyJmaWQiOjE0Mjg1MTQsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhjM2EwNzg1MDU1Q2VEMzRFYjI0MmJhYjQ3RGVGOTYyQmFjYzlENjkyIn0",
+    "payload": "eyJkb21haW4iOiJtaW5pLW1hdGgtcXVpei52ZXJjZWwuYXBwIn0",
+    "signature": "GH6wu71zW9CR4tUqvZm/VnI/uC7Eex8xAR4pY1DEFhkSoTK4fBXvrNVYc9yUjBcZwrVz26tz6wpzjDetGW92PBw="
+  }
+},
     miniapp: {
       version: "1",
       name: "Mini Math Quiz",
